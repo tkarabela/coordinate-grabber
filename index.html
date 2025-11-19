@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coordinate Grabber - Image Rectangle Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .drop-zone {
+            border: 3px dashed #667eea;
+            border-radius: 12px;
+            padding: 60px 20px;
+            text-align: center;
+            background: #f8f9ff;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .drop-zone:hover {
+            background: #f0f2ff;
+            border-color: #764ba2;
+        }
+
+        .drop-zone.dragover {
+            background: #e8ebff;
+            border-color: #764ba2;
+            transform: scale(1.02);
+        }
+
+        .drop-zone-text {
+            color: #667eea;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .drop-zone-hint {
+            color: #999;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .canvas-container {
+            position: relative;
+            display: inline-block;
+            margin: 20px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+
+        #imageCanvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            cursor: crosshair;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .rectangles-list {
+            flex: 1;
+            min-width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: #f8f9ff;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .rectangles-list.empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-style: italic;
+        }
+
+        .rectangle-item {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rectangle-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .rectangle-coords {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #333;
+            flex: 1;
+        }
+
+        .rectangle-number {
+            font-weight: 600;
+            color: #667eea;
+            margin-right: 8px;
+        }
+
+        .delete-btn {
+            background: #ff4444;
+            padding: 6px 12px;
+            font-size: 12px;
+            box-shadow: 0 2px 8px rgba(255, 68, 68, 0.3);
+        }
+
+        .delete-btn:hover {
+            background: #ff6666;
+            box-shadow: 0 4px 12px rgba(255, 68, 68, 0.5);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #856404;
+        }
+
+        .instructions h3 {
+            margin-bottom: 8px;
+            color: #856404;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin: 5px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Coordinate Grabber</h1>
+        <p class="subtitle">Draw rectangles on images and copy their coordinates</p>
+
+        <div id="dropZone" class="drop-zone">
+            <div class="drop-zone-text">📁 Drag & Drop an Image Here</div>
+            <div class="drop-zone-hint">or click to select a file</div>
+            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+        </div>
+
+        <div id="canvasContainer" class="canvas-container hidden">
+            <canvas id="imageCanvas"></canvas>
+        </div>
+
+        <div id="controls" class="controls hidden">
+            <div class="rectangles-list empty" id="rectanglesList">
+                Draw rectangles to see their coordinates
+            </div>
+            <div class="button-group">
+                <button id="copyButton" disabled>📋 Copy All Coordinates</button>
+                <button id="clearAllButton">🗑️ Clear All</button>
+                <button id="resetButton">🔄 Reset Image</button>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>How to use:</h3>
+            <ul>
+                <li>Drag and drop an image or click the drop zone to select a file</li>
+                <li>Click and drag on the image to draw a rectangle</li>
+                <li>You can draw multiple rectangles - each will be saved</li>
+                <li>Release to see the coordinates (x, y, width, height) in the list</li>
+                <li>Click "Copy All Coordinates" to copy all rectangles' coordinates to your clipboard</li>
+                <li>Click the delete button (🗑️) next to any rectangle to remove it</li>
+                <li>Use "Clear All" to remove all rectangles</li>
+                <li>Use "Reset Image" to start over with a new image</li>
+            </ul>
+        </div>
+    </div>
+
+    <script type="module" src="dist/app.js"></script>
+</body>
+</html>
+

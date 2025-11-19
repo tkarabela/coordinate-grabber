@@ -1,0 +1,24 @@
+{
+  "name": "coordinate-grabber",
+  "version": "1.0.0",
+  "description": "A single-page application to draw rectangles on images and copy coordinates",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "serve": "npx http-server . -p 8080 -o"
+  },
+  "keywords": [
+    "image",
+    "coordinates",
+    "rectangle",
+    "canvas"
+  ],
+  "author": "Tomas Karabela <tkarabela@seznam.cz>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3"
+  }
+}
+
