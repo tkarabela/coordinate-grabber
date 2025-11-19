@@ -1,7 +1,6 @@
 # Coordinate Grabber
 
-A simple in-browser app to quickly grab multiple rectangle coordinates from a given image, available [here](
-tkarabela.github.io/coordinate-grabber/). It's useful for cropping images with [Pillow](https://pypi.org/project/pillow/) or similar.
+A simple in-browser app to quickly grab multiple rectangle coordinates from a given image, available [here](https://tkarabela.github.io/coordinate-grabber/). It's useful for cropping images with [Pillow](https://pypi.org/project/pillow/) or similar.
 
 Also an experiment in *vibe coding*. The entirety of the code has been created in half an hour in Cursor using the following prompts:
 
